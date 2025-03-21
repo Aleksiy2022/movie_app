@@ -19,6 +19,7 @@
     ]
   },
   "dependencies": {
+    "antd": "^5.24.4",
     "date-fns": "^4.1.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
