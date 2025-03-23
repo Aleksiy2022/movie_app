@@ -1,21 +1,36 @@
-const listGridStyle = {
-  gutter: 36,
-  xs: 1,
-  sm: 2,
-  md: 2,
-  lg: 2,
-  xl: 2,
-  xxl: 2,
+const card = {
+  body: {
+    padding: 0,
+    height: 280,
+  },
 }
 
-const listStyle = {
-  maxWidth: 1010,
-  margin: '0 auto',
+const imgStyle = {
+  display: 'block',
+  height: 281,
+  width: 183,
 }
 
-const listItemStyle = {
-  marginBottom: 36,
-  boxShadow: '0px 4px 12px 0 rgba(0, 0, 0, 0.15)',
+const cardContentWrapper = {
+  justifyContent: 'space-between',
 }
 
-export { listGridStyle, listStyle, listItemStyle }
+const cardContent = {
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: 7,
+  padding: '10px 20px',
+}
+
+const cardTitle = {
+  margin: 0,
+}
+
+const cardParagraph = {
+  fontSize: '12px',
+  lineHeight: '22px',
+  height: 129,
+}
+
+export { card, imgStyle, cardContentWrapper, cardContent, cardTitle, cardParagraph }
