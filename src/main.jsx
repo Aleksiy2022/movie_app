@@ -6,8 +6,4 @@ import { MovieService } from './movie_service/movie_service.js'
 
 const moviesService = new MovieService()
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App moviesService={moviesService} />
-  </StrictMode>
-)
+createRoot(document.getElementById('root')).render(<App moviesService={moviesService} />)
