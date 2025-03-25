@@ -12,19 +12,22 @@ class MovieService {
   maxOverviewLength = 200
 
   async moviesBySearchQuery(query) {
-    const url = `${this.baseSearchUrl}/search/movie?query=${query}`
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Authorization: `${this.typeAuth} ${this.token}`,
-      },
-    })
-    const data = await res.json()
-    return data.results.map(this._transformMoviesBySearchQuery.bind(this))
+    try {
+      const url = `${this.baseSearchUrl}/search/movie?query=${query}`
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `${this.typeAuth} ${this.token}`,
+        },
+      })
+      const data = await res.json()
+      return data.results.map(this._transformMoviesBySearchQuery.bind(this))
+    } catch (err) {
+      throw new Error(`Could not fetch movies. Error ${err.name}, message: ${err.message}`)
+    }
   }
 
   _transformMoviesBySearchQuery(movie) {
-    console.log(movie)
     const { poster_path, title, release_date, overview } = movie
     const trimmedTitle = trimText(title, this.maxTitleLength)
     const formattedReleaseDate = format(release_date, 'MMM d, yyyy')
