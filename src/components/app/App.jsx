@@ -6,10 +6,11 @@ import ErrorIndicator from '../error_indicator/ErrorIndicator.jsx'
 
 export default function App({ moviesService }) {
   const [movies, setMovies] = useState([])
-  const [searchQuery, setSearchQuery] = useState('Titanic') // eslint-disable-line no-unused-vars
+  const [searchQuery, setSearchQuery] = useState('Jack+Reacher') // eslint-disable-line no-unused-vars
   const [loading, setLoading] = useState(true)
   const [errorStatus, setErrorStatus] = useState(false)
   const [errorInfo, setErrorInfo] = useState(null)
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
 
   async function onMoviesSearched(movies) {
     setLoading(false)
@@ -31,12 +32,13 @@ export default function App({ moviesService }) {
 
   useEffect(() => {
     setLoading(true)
+    setIsOnline(navigator.onLine)
     updateMovies()
   }, [])
 
-  const spinner = loading ? <SpinLoader /> : null
-  const content = !(loading || errorStatus) ? <FilmCardsList movies={movies} /> : null
-  const error = errorStatus ? <ErrorIndicator error={errorInfo} /> : null
+  const spinner = loading && isOnline ? <SpinLoader /> : null
+  const content = !(loading || errorStatus || !isOnline) ? <FilmCardsList movies={movies} /> : null
+  const error = errorStatus || !isOnline ? <ErrorIndicator error={errorInfo} isOnline={isOnline} /> : null
 
   return (
     <Fragment>
