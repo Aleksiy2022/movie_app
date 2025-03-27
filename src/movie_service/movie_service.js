@@ -11,9 +11,9 @@ class MovieService {
   maxTitleLength = 19
   maxOverviewLength = 150
 
-  async searchMovies(query) {
+  async searchMovies(query, page) {
     try {
-      const url = `${this.baseSearchUrl}/search/movie?query=${query}`
+      const url = `${this.baseSearchUrl}/search/movie?query=${query}&page=${page}&language=ru-RU`
       const res = await fetch(url, {
         method: 'GET',
         headers: {
@@ -21,7 +21,10 @@ class MovieService {
         },
       })
       const data = await res.json()
-      return data.results.map(this._transformSearchMovies.bind(this))
+      return {
+        totalMovies: data.total_results,
+        movies: data.results.map(this._transformSearchMovies.bind(this)),
+      }
     } catch (err) {
       throw new Error(`Could not fetch movies. Error ${err.name}, message: ${err.message}`)
     }

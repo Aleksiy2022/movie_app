@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Input, Tabs } from 'antd'
+import { Input, Tabs, Pagination } from 'antd'
 import _debounce from 'lodash/debounce'
 
 import SpinLoader from '../spin_loader/SpinLoader.jsx'
@@ -8,7 +8,9 @@ import ErrorIndicator from '../error_indicator/ErrorIndicator.jsx'
 
 export default function App({ moviesService }) {
   const [movies, setMovies] = useState([])
-  const [searchQuery, setSearchQuery] = useState('') // eslint-disable-line no-unused-vars
+  const [searchQuery, setSearchQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const [totalMovies, setTotalMovies] = useState(0)
   const [loading, setLoading] = useState(true)
   const [errorStatus, setErrorStatus] = useState(false)
   const [errorInfo, setErrorInfo] = useState(null)
@@ -17,12 +19,13 @@ export default function App({ moviesService }) {
   const updateMoviesDebounce = useCallback(_debounce(updateMovies, 1000), [])
 
   useEffect(() => {
-    updateMovies()
-  }, [])
+    updateMovies(searchQuery, page)
+  }, [page])
 
   async function onMoviesSearched(movies) {
     setLoading(false)
-    setMovies(movies)
+    setMovies(movies.movies)
+    setTotalMovies(movies.totalMovies)
   }
 
   async function onError(err) {
@@ -36,11 +39,15 @@ export default function App({ moviesService }) {
     updateMoviesDebounce(evt.target.value)
   }
 
-  async function updateMovies(query = '') {
+  async function handleChangePage(page) {
+    setPage(page)
+  }
+
+  async function updateMovies(query = '', currentPage = page) {
     setLoading(true)
     setIsOnline(navigator.onLine)
     try {
-      const searchedMovies = await moviesService.searchMovies(query)
+      const searchedMovies = await moviesService.searchMovies(query, currentPage)
       await onMoviesSearched(searchedMovies)
     } catch (err) {
       await onError(err)
@@ -89,6 +96,7 @@ export default function App({ moviesService }) {
       {spinner}
       {content}
       {error}
+      <Pagination align="center" сurrent={page} onChange={handleChangePage} total={totalMovies} />
     </main>
   )
 }
