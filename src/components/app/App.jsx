@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Input, Tabs } from 'antd'
+import _debounce from 'lodash/debounce'
 
 import SpinLoader from '../spin_loader/SpinLoader.jsx'
 import FilmCardsList from '../film_cards_list/FilmCardsList.jsx'
@@ -7,11 +8,17 @@ import ErrorIndicator from '../error_indicator/ErrorIndicator.jsx'
 
 export default function App({ moviesService }) {
   const [movies, setMovies] = useState([])
-  const [searchQuery, setSearchQuery] = useState('Reacher') // eslint-disable-line no-unused-vars
+  const [searchQuery, setSearchQuery] = useState('') // eslint-disable-line no-unused-vars
   const [loading, setLoading] = useState(true)
   const [errorStatus, setErrorStatus] = useState(false)
   const [errorInfo, setErrorInfo] = useState(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
+
+  const updateMoviesDebounce = useCallback(_debounce(updateMovies, 1000), [])
+
+  useEffect(() => {
+    updateMovies()
+  }, [])
 
   async function onMoviesSearched(movies) {
     setLoading(false)
@@ -24,23 +31,26 @@ export default function App({ moviesService }) {
     setErrorInfo(err)
   }
 
-  async function updateMovies() {
-    moviesService
-      .moviesBySearchQuery(searchQuery)
-      .then(onMoviesSearched)
-      .catch((err) => onError(err))
+  async function onSearch(evt) {
+    setSearchQuery(evt.target.value)
+    updateMoviesDebounce(evt.target.value)
   }
 
-  useEffect(() => {
+  async function updateMovies(query = '') {
     setLoading(true)
     setIsOnline(navigator.onLine)
-    updateMovies()
-  }, [])
+    try {
+      const searchedMovies = await moviesService.searchMovies(query)
+      await onMoviesSearched(searchedMovies)
+    } catch (err) {
+      await onError(err)
+    }
+  }
 
   const spinner = loading && isOnline ? <SpinLoader /> : null
   const content = !(loading || errorStatus || !isOnline) ? <FilmCardsList movies={movies} /> : null
   const error = errorStatus || !isOnline ? <ErrorIndicator error={errorInfo} isOnline={isOnline} /> : null
-  const searchInput = <Input placeholder="Type to search..." onChange={() => {}} />
+  const searchInput = <Input value={searchQuery} placeholder="Type to search..." onChange={onSearch} />
 
   const tabItems = [
     {
