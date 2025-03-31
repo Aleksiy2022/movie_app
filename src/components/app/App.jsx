@@ -6,6 +6,8 @@ import SpinLoader from '../spin_loader/SpinLoader.jsx'
 import FilmCardsList from '../film_cards_list/FilmCardsList.jsx'
 import ErrorIndicator from '../error_indicator/ErrorIndicator.jsx'
 
+import { main, tabs } from './AppStyle.js'
+
 export default function App({ moviesService }) {
   const [movies, setMovies] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -22,24 +24,24 @@ export default function App({ moviesService }) {
     updateMovies(searchQuery, page)
   }, [page])
 
-  async function onMoviesSearched(movies) {
+  function onMoviesSearched(movies) {
     setLoading(false)
     setMovies(movies.movies)
     setTotalMovies(movies.totalMovies)
   }
 
-  async function onError(err) {
+  function onError(err) {
     setLoading(false)
     setErrorStatus(true)
     setErrorInfo(err)
   }
 
-  async function onSearch(evt) {
+  function onSearch(evt) {
     setSearchQuery(evt.target.value)
     updateMoviesDebounce(evt.target.value)
   }
 
-  async function handleChangePage(page) {
+  function handleChangePage(page) {
     setPage(page)
   }
 
@@ -73,26 +75,8 @@ export default function App({ moviesService }) {
   ]
 
   return (
-    <main
-      style={{
-        boxSizing: 'border-box',
-        margin: '0 auto',
-        padding: '15px 36px',
-        maxWidth: '1010px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 34,
-      }}
-    >
-      <Tabs
-        defaultActiveKey="1"
-        items={tabItems}
-        centered
-        style={{
-          width: '100%',
-        }}
-      />
+    <main style={main}>
+      <Tabs defaultActiveKey="1" items={tabItems} centered style={tabs} />
       {spinner}
       {content}
       {error}
