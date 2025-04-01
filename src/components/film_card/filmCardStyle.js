@@ -3,6 +3,7 @@ const card = {
     padding: 0,
     height: 280,
   },
+  width: '100%',
 }
 
 const imgStyle = {
@@ -16,11 +17,13 @@ const cardContentWrapper = {
 }
 
 const cardContent = {
+  boxSizing: 'border-box',
+  height: 281,
   flexDirection: 'column',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
   gap: 7,
-  padding: '10px 20px',
+  padding: '10px 20px 20px 20px',
 }
 
 const cardTitle = {

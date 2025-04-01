@@ -1,4 +1,4 @@
-import { Card, Flex, Typography, Tag } from 'antd'
+import { Card, Flex, Typography, Tag, Rate } from 'antd'
 
 import { card, imgStyle, cardContentWrapper, cardContent, cardTitle, cardParagraph } from './filmCardStyle.js'
 
@@ -20,6 +20,7 @@ export default function FilmCard({ movie }) {
           <Typography.Text type={'secondary'}>{formattedReleaseDate}</Typography.Text>
           <Flex justify={'space-between'}>{genreTagList}</Flex>
           <Typography.Paragraph style={cardParagraph}>{trimmedOverview}</Typography.Paragraph>
+          <Rate count={10} allowHalf defaultValue={0} style={{ alignSelf: 'center' }} />
         </Flex>
       </Flex>
     </Card>

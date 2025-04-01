@@ -1,16 +1,11 @@
-const main = {
-  boxSizing: 'border-box',
-  margin: '0 auto',
-  padding: '15px 36px',
+const layout = {
   maxWidth: '1010px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: 34,
+  margin: '0 auto',
+  paddingBottom: '17px',
 }
 
 const tabs = {
   width: '100%',
 }
 
-export { main, tabs }
+export { layout, tabs }
