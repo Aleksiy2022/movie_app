@@ -1,0 +1,11 @@
+.spin-container {
+  margin-bottom: 36px;
+}
+
+.spin-content {
+  padding: 50px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  width: 50px;
+  height: 50px;
+}

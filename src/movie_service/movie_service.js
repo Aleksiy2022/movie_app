@@ -8,8 +8,8 @@ class MovieService {
   typeAuth = 'Bearer'
   baseUrl = 'https://api.themoviedb.org/3/'
   baseImageUrl = 'https://image.tmdb.org/t/p/w500/'
-  maxTitleLength = 19
-  maxOverviewLength = 150
+  maxTitleLength = 22
+  maxOverviewLength = 180
 
   async getGuestSession() {
     const session = JSON.parse(localStorage.getItem('TMDBGuestSession'))

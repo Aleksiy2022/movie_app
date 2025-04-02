@@ -1,11 +1,10 @@
 import { Flex, Spin } from 'antd'
-
-import { contentStyle } from './spinStyle.js'
+import './spin.css'
 
 export default function SpinLoader() {
-  const content = <div style={contentStyle} />
+  const content = <div className="spin-content" />
   return (
-    <Flex justify={'center'} gap="middle" style={{ marginBottom: 36 }}>
+    <Flex justify={'center'} gap="middle" className="spin-container">
       <Spin tip="Loading" size="large">
         {content}
       </Spin>

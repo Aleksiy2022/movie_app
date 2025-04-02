@@ -12,9 +12,10 @@ export default function SearchedMoviesPage({
   errorStatus,
   errorInfo,
   onSearch,
+  isMobile,
 }) {
   const spinner = loading && isOnline ? <SpinLoader /> : null
-  const content = !(loading || errorStatus || !isOnline) ? <FilmCardsList movies={movies} /> : null
+  const content = !(loading || errorStatus || !isOnline) ? <FilmCardsList movies={movies} isMobile={isMobile} /> : null
   const error = errorStatus || !isOnline ? <ErrorIndicator error={errorInfo} isOnline={isOnline} /> : null
   const searchInput = <Input value={searchQuery} placeholder="Type to search..." onChange={onSearch} />
 

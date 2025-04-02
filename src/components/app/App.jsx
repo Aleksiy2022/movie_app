@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ConfigProvider, Flex, Tabs, Pagination } from 'antd'
 import _debounce from 'lodash/debounce'
+import './app.css'
 
 import SearchedMoviesPage from '../searced_movies_page/SearchedMoviesPage.jsx'
 import RatedMoviesPage from '../rated_movies_page/RatedMoviesPage.jsx'
-
-import { layout, tabs } from './AppStyle.js'
 
 export default function App({ moviesService }) {
   const [session, setSession] = useState({})
@@ -17,12 +16,19 @@ export default function App({ moviesService }) {
   const [errorStatus, setErrorStatus] = useState(false)
   const [errorInfo, setErrorInfo] = useState(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [isMobile, setIsMobile] = useState(false)
 
   const updateMoviesDebounce = useCallback(_debounce(updateMovies, 1000), [])
 
   useEffect(() => {
     updateMovies(searchQuery, page)
   }, [page])
+
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 500px').matches) {
+      setIsMobile(true)
+    }
+  }, [])
 
   useEffect(() => {
     moviesService.getGuestSession().then((sessionData) => {
@@ -76,6 +82,7 @@ export default function App({ moviesService }) {
           errorStatus={errorStatus}
           errorInfo={errorInfo}
           onSearch={onSearch}
+          isMobile={isMobile}
         />
       ),
     },
@@ -97,16 +104,23 @@ export default function App({ moviesService }) {
       theme={{
         token: {
           fontSizeHeading3: 20,
+          fontWeightStrong: 400,
         },
         components: {
           Rate: {
-            starSize: 18,
+            starSize: 17,
+          },
+          Card: {
+            bodyPadding: 0,
+          },
+          Typography: {
+            titleMarginBottom: 0,
           },
         },
       }}
     >
-      <Flex vertical style={layout}>
-        <Tabs defaultActiveKey="1" items={tabItems} centered style={tabs} />
+      <Flex vertical className={'page'}>
+        <Tabs defaultActiveKey="1" items={tabItems} centered />
         <Pagination align="center" сurrent={page} onChange={handleChangePage} total={totalMovies} />
       </Flex>
     </ConfigProvider>
