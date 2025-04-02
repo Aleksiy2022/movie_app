@@ -2,10 +2,7 @@ import { Card, Flex, Typography, Tag, Rate, Image } from 'antd'
 import './film-card.css'
 
 export default function FilmCard({ movie, isMobile }) {
-  console.log(isMobile)
-  const { realPosterPath, trimmedTitle, formattedReleaseDate, genres, trimmedOverview } = movie
-
-  const rating = '5.0'
+  const { realPosterPath, trimmedTitle, formattedReleaseDate, genres, trimmedOverview, rating } = movie
 
   const genreTagList = genres.map((genre, index) => {
     return <Tag key={index}>{genre}</Tag>
@@ -53,8 +50,18 @@ export default function FilmCard({ movie, isMobile }) {
 }
 
 function Rating({ rating }) {
+  let color = '#000000'
+  if (rating <= 3) {
+    color = '#E90000'
+  } else if (rating <= 5) {
+    color = '#E97E00'
+  } else if (rating <= 7) {
+    color = '#E9D100'
+  } else if (rating <= 10) {
+    color = '#66E900'
+  }
   return (
-    <div className="rating">
+    <div className="rating" style={{ borderColor: color }}>
       <span>{rating}</span>
     </div>
   )

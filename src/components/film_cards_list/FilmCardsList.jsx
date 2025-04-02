@@ -18,7 +18,7 @@ export default function FilmCardsList({ movies, isMobile }) {
       }}
       dataSource={movies}
       renderItem={(movie) => (
-        <List.Item className="list-item">
+        <List.Item key={movie.id} className="list-item">
           <FilmCard movie={movie} isMobile={isMobile} />
         </List.Item>
       )}

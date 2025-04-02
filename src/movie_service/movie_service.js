@@ -63,18 +63,61 @@ class MovieService {
     }
   }
 
+  async addMovieRating(movie_id = '129', guest_session_id = '168c7da7c6915241b8ca5ca77fcf0845', rating = 1) {
+    const url = `${this.baseUrl}/movie/${movie_id}/rating?guest_session_id=${guest_session_id}`
+    try {
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `${this.typeAuth} ${this.token}`,
+          'Content-Type': 'application/json;charset=utf-8',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          value: rating,
+        }),
+      })
+    } catch (err) {
+      throw new Error(`Could add rating to movie. Error ${err.name}, message: ${err.message}`)
+    }
+  }
+
+  async getRatedMovies(guest_session_id) {
+    const url = `${this.baseUrl}/guest_session/${guest_session_id}/rated/movies`
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `${this.typeAuth} ${this.token}`,
+          Accept: 'application/json',
+        },
+      })
+      const data = await res.json()
+      console.log(data)
+      return {
+        totalMovies: data.total_results,
+        movies: data.results.map(this._transformSearchMovies.bind(this)),
+      }
+    } catch (err) {
+      throw new Error(`Could not fetch rated movies. Error ${err.name}, message: ${err.message}`)
+    }
+  }
+
   _transformSearchMovies(movie) {
-    const { poster_path, title, release_date, overview } = movie
+    const { id, poster_path, title, release_date, overview, vote_average, rating = null } = movie
     const trimmedTitle = trimText(title, this.maxTitleLength)
     const formattedReleaseDate = release_date ? format(release_date, 'MMM d, yyyy') : 'unknown'
     const trimmedOverview = trimText(overview, this.maxOverviewLength)
 
     return {
+      movie_id: id,
       realPosterPath: `${this.baseImageUrl}${poster_path}`,
       trimmedTitle: trimmedTitle,
       genres: ['Drama', 'Action'],
       formattedReleaseDate: formattedReleaseDate,
       trimmedOverview: trimmedOverview,
+      rating: vote_average.toFixed(1),
+      my_rating: rating,
     }
   }
 }
