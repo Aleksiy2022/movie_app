@@ -7,7 +7,7 @@ import './app.css'
 import SearchedMoviesPage from '../searced_movies_page/SearchedMoviesPage.jsx'
 import RatedMoviesPage from '../rated_movies_page/RatedMoviesPage.jsx'
 
-import { tokens, components } from './globalAndComponentsTokens.js'
+import { components, tokens } from './globalAndComponentsTokens.js'
 
 export default function App({ moviesService }) {
   const [session, setSession] = useState(null)
@@ -24,6 +24,7 @@ export default function App({ moviesService }) {
   const [errorInfo, setErrorInfo] = useState(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [isMobile, setIsMobile] = useState(false)
+  const [genres, setGenres] = useState([])
 
   const updateSearchedMoviesDebounce = useCallback(_debounce(updateSearchedMovies, 1000), [])
 
@@ -34,6 +35,9 @@ export default function App({ moviesService }) {
     if (window.matchMedia('(max-width: 500px').matches) {
       setIsMobile(true)
     }
+    moviesService.getMovieGenres().then((movieGenres) => {
+      setGenres(movieGenres)
+    })
   }, [])
 
   useEffect(() => {
@@ -44,6 +48,7 @@ export default function App({ moviesService }) {
 
   useEffect(() => {
     updateSearchedMoviesDebounce(searchQuery, searchPage)
+    console.log(genres)
   }, [searchQuery, searchPage])
 
   useEffect(() => {
@@ -95,9 +100,7 @@ export default function App({ moviesService }) {
     setMoviesIdWithRating((currentData) =>
       currentData.map((movie) => {
         if (movie.id === movieId) {
-          const newMovie = { ...movie, rating: value }
-          console.log(newMovie)
-          return newMovie
+          return { ...movie, rating: value }
         }
         return movie
       })

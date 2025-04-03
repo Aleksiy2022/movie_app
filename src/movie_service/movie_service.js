@@ -19,6 +19,23 @@ class MovieService {
     return session
   }
 
+  async getMovieGenres() {
+    const url = `${this.baseUrl}/genre/movie/list`
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `${this.typeAuth} ${this.token}`,
+          Accept: 'application/json',
+        },
+      })
+      const data = await res.json()
+      return data.genres
+    } catch (err) {
+      throw new Error(`Could not get genres. Error ${err.name}, message: ${err.message}`)
+    }
+  }
+
   async createGuestSession() {
     try {
       const response = await fetch(`${this.baseUrl}authentication/guest_session/new`, {
@@ -92,9 +109,6 @@ class MovieService {
           Accept: 'application/json',
         },
       })
-      if (!res.ok) {
-        return
-      }
       const data = await res.json()
       if (getRatings) {
         return data
