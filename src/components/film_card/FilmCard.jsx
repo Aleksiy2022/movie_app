@@ -1,12 +1,25 @@
 import { Card, Flex, Typography, Tag, Rate, Image } from 'antd'
 import './film-card.css'
+import { useState } from 'react'
+
+import { MovieService } from '../../movie_service/movie_service.js'
 
 export default function FilmCard({ movie, isMobile }) {
-  const { realPosterPath, trimmedTitle, formattedReleaseDate, genres, trimmedOverview, rating } = movie
+  const movieService = new MovieService()
+  const [value, setValue] = useState(0)
+  const { movie_id, realPosterPath, trimmedTitle, formattedReleaseDate, genres, trimmedOverview, rating } = movie
 
   const genreTagList = genres.map((genre, index) => {
     return <Tag key={index}>{genre}</Tag>
   })
+
+  function handleChange(value) {
+    const session = localStorage.getItem('TMDBGuestSession')
+    const sessionId = JSON.parse(session).guest_session_id
+
+    movieService.addMovieRating(movie_id, sessionId, value)
+    setValue(value)
+  }
 
   if (isMobile) {
     return (
@@ -24,7 +37,7 @@ export default function FilmCard({ movie, isMobile }) {
         </Flex>
         <Flex vertical>
           <Typography.Paragraph className="card-description">{trimmedOverview}</Typography.Paragraph>
-          <Rate count={10} allowHalf defaultValue={0} style={{ alignSelf: 'flex-end' }} />
+          <Rate count={10} allowHalf keyboard value={value} onChange={handleChange} style={{ alignSelf: 'flex-end' }} />
         </Flex>
       </Card>
     )
@@ -42,7 +55,7 @@ export default function FilmCard({ movie, isMobile }) {
           <Typography.Text type={'secondary'}>{formattedReleaseDate}</Typography.Text>
           <Flex justify={'space-between'}>{genreTagList}</Flex>
           <Typography.Paragraph className="card-description">{trimmedOverview}</Typography.Paragraph>
-          <Rate count={10} allowHalf defaultValue={0} style={{ alignSelf: 'flex-end' }} />
+          <Rate count={10} allowHalf keyboard value={value} onChange={handleChange} style={{ alignSelf: 'flex-end' }} />
         </Flex>
       </Flex>
     </Card>

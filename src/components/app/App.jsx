@@ -40,7 +40,6 @@ export default function App({ moviesService }) {
 
   useEffect(() => {
     if (session) {
-      moviesService.addMovieRating()
       updatesRatedMovies(session.guest_session_id)
     }
   }, [session])
@@ -71,6 +70,10 @@ export default function App({ moviesService }) {
     setSearchPage(page)
   }
 
+  function handleTabClick(key) {
+    console.log(key)
+  }
+
   async function updateSearchedMovies(query = '', currentPage = searchPage) {
     setLoading(true)
     setIsOnline(navigator.onLine)
@@ -87,6 +90,7 @@ export default function App({ moviesService }) {
     setIsOnline(navigator.onLine)
     try {
       const ratedMovies = await moviesService.getRatedMovies(sessionId)
+      if (!ratedMovies) return
       await onRatedMovies(ratedMovies)
     } catch (err) {
       await onError(err)
@@ -128,7 +132,7 @@ export default function App({ moviesService }) {
   return (
     <ConfigProvider theme={{ token: tokens, components: components }}>
       <Flex vertical className={'page'}>
-        <Tabs defaultActiveKey="1" items={tabItems} centered />
+        <Tabs defaultActiveKey="1" items={tabItems} centered onTabClick={handleTabClick} />
         <Pagination align="center" сurrent={searchPage} onChange={handleChangePage} total={totalMovies} />
       </Flex>
     </ConfigProvider>

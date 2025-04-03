@@ -92,8 +92,10 @@ class MovieService {
           Accept: 'application/json',
         },
       })
+      if (!res.ok) {
+        return
+      }
       const data = await res.json()
-      console.log(data)
       return {
         totalMovies: data.total_results,
         movies: data.results.map(this._transformSearchMovies.bind(this)),
