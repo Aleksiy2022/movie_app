@@ -4,7 +4,7 @@ import FilmCard from '../film_card/FilmCard.jsx'
 
 import './film-card-style.css'
 
-export default function FilmCardsList({ movies, isMobile }) {
+export default function FilmCardsList({ movies, isMobile, moviesIdWithRating, handleChangeRating }) {
   return (
     <List
       grid={{
@@ -19,7 +19,12 @@ export default function FilmCardsList({ movies, isMobile }) {
       dataSource={movies}
       renderItem={(movie) => (
         <List.Item key={movie.id} className="list-item">
-          <FilmCard movie={movie} isMobile={isMobile} />
+          <FilmCard
+            movie={movie}
+            isMobile={isMobile}
+            moviesIdWithRating={moviesIdWithRating}
+            handleChangeRating={handleChangeRating}
+          />
         </List.Item>
       )}
     />

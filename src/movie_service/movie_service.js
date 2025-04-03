@@ -82,8 +82,8 @@ class MovieService {
     }
   }
 
-  async getRatedMovies(guest_session_id) {
-    const url = `${this.baseUrl}/guest_session/${guest_session_id}/rated/movies`
+  async getRatedMovies(guest_session_id, page, getRatings = false) {
+    const url = `${this.baseUrl}/guest_session/${guest_session_id}/rated/movies?page=${page}`
     try {
       const res = await fetch(url, {
         method: 'GET',
@@ -96,6 +96,9 @@ class MovieService {
         return
       }
       const data = await res.json()
+      if (getRatings) {
+        return data
+      }
       return {
         totalMovies: data.total_results,
         movies: data.results.map(this._transformSearchMovies.bind(this)),
@@ -105,6 +108,21 @@ class MovieService {
     }
   }
 
+  async getMoviesIdWithRating(guest_session_id, totalPage) {
+    let movies = []
+    for (let page = 1; page < totalPage + 1; page++) {
+      const res = await this.getRatedMovies(guest_session_id, page, true)
+      const moviesData = res.results.map((movie) => {
+        return {
+          id: movie.id,
+          rating: movie.rating,
+        }
+      })
+      movies = [...movies, ...moviesData]
+    }
+    return movies
+  }
+
   _transformSearchMovies(movie) {
     const { id, poster_path, title, release_date, overview, vote_average, rating = null } = movie
     const trimmedTitle = trimText(title, this.maxTitleLength)
@@ -112,14 +130,14 @@ class MovieService {
     const trimmedOverview = trimText(overview, this.maxOverviewLength)
 
     return {
-      movie_id: id,
+      movieId: id,
       realPosterPath: `${this.baseImageUrl}${poster_path}`,
       trimmedTitle: trimmedTitle,
       genres: ['Drama', 'Action'],
       formattedReleaseDate: formattedReleaseDate,
       trimmedOverview: trimmedOverview,
-      rating: vote_average.toFixed(1),
-      my_rating: rating,
+      rating: vote_average ? vote_average.toFixed(1) : '0.0',
+      myRating: rating,
     }
   }
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ConfigProvider, Flex, Tabs, Pagination } from 'antd'
+import { ConfigProvider, Flex, Tabs } from 'antd'
 import _debounce from 'lodash/debounce'
 
 import './app.css'
@@ -11,12 +11,14 @@ import { tokens, components } from './globalAndComponentsTokens.js'
 
 export default function App({ moviesService }) {
   const [session, setSession] = useState(null)
-  const [searchedMovies, setSearchedMovies] = useState([])
-  const [ratedMovies, setRatedMovies] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchPage, setSearchPage] = useState(1)
-  // const [ratedPage, setRatedPage] = useState(1)
-  const [totalMovies, setTotalMovies] = useState(0)
+  const [searchPage, setSearchPage] = useState(Number(1))
+  const [searchedMovies, setSearchedMovies] = useState([])
+  const [totalSearchedMovies, setTotalSearchedMovies] = useState(0)
+  const [ratedPage, setRatedPage] = useState(1)
+  const [totalRatedMovies, setTotalRatedMovies] = useState(0)
+  const [ratedMovies, setRatedMovies] = useState([])
+  const [moviesIdWithRating, setMoviesIdWithRating] = useState([])
   const [loading, setLoading] = useState(true)
   const [errorStatus, setErrorStatus] = useState(false)
   const [errorInfo, setErrorInfo] = useState(null)
@@ -35,24 +37,37 @@ export default function App({ moviesService }) {
   }, [])
 
   useEffect(() => {
+    if (session) {
+      updatesRatedMovies(session.guest_session_id, ratedPage)
+    }
+  }, [session, ratedPage])
+
+  useEffect(() => {
     updateSearchedMoviesDebounce(searchQuery, searchPage)
-  }, [searchPage])
+  }, [searchQuery, searchPage])
 
   useEffect(() => {
     if (session) {
-      updatesRatedMovies(session.guest_session_id)
+      updateMoviesIdWithRating()
     }
-  }, [session])
+  }, [totalRatedMovies])
+
+  function updateMoviesIdWithRating() {
+    moviesService
+      .getMoviesIdWithRating(session.guest_session_id, Math.ceil(totalRatedMovies / 20))
+      .then((newRatings) => setMoviesIdWithRating(newRatings))
+  }
 
   function onSearchedMovies(movies) {
     setLoading(false)
     setSearchedMovies(movies.movies)
-    setTotalMovies(movies.totalMovies)
+    setTotalSearchedMovies(movies.totalMovies)
   }
 
   function onRatedMovies(movies) {
     setLoading(false)
     setRatedMovies(movies.movies)
+    setTotalRatedMovies(movies.totalMovies)
   }
 
   function onError(err) {
@@ -62,16 +77,31 @@ export default function App({ moviesService }) {
   }
 
   function onSearch(evt) {
+    const pageNumber = Number(1)
+    setSearchPage(pageNumber)
     setSearchQuery(evt.target.value)
-    updateSearchedMoviesDebounce(evt.target.value)
   }
 
   function handleChangePage(page) {
     setSearchPage(page)
   }
 
-  function handleTabClick(key) {
-    console.log(key)
+  function handleRatedPage(page) {
+    setRatedPage(page)
+  }
+
+  function handleChangeRating(movieId, value) {
+    moviesService.addMovieRating(movieId, session.guest_session_id, value)
+    setMoviesIdWithRating((currentData) =>
+      currentData.map((movie) => {
+        if (movie.id === movieId) {
+          const newMovie = { ...movie, rating: value }
+          console.log(newMovie)
+          return newMovie
+        }
+        return movie
+      })
+    )
   }
 
   async function updateSearchedMovies(query = '', currentPage = searchPage) {
@@ -85,11 +115,11 @@ export default function App({ moviesService }) {
     }
   }
 
-  async function updatesRatedMovies(sessionId) {
+  async function updatesRatedMovies(sessionId, page) {
     setLoading(true)
     setIsOnline(navigator.onLine)
     try {
-      const ratedMovies = await moviesService.getRatedMovies(sessionId)
+      const ratedMovies = await moviesService.getRatedMovies(sessionId, page)
       if (!ratedMovies) return
       await onRatedMovies(ratedMovies)
     } catch (err) {
@@ -104,13 +134,19 @@ export default function App({ moviesService }) {
       children: (
         <SearchedMoviesPage
           movies={searchedMovies}
+          totalMovies={totalSearchedMovies}
           searchQuery={searchQuery}
+          searchPage={searchPage}
+          handleChangePage={handleChangePage}
           loading={loading}
           isOnline={isOnline}
           errorStatus={errorStatus}
           errorInfo={errorInfo}
           onSearch={onSearch}
           isMobile={isMobile}
+          totalSearchedMovies={totalSearchedMovies}
+          moviesIdWithRating={moviesIdWithRating}
+          handleChangeRating={handleChangeRating}
         />
       ),
     },
@@ -120,10 +156,15 @@ export default function App({ moviesService }) {
       children: (
         <RatedMoviesPage
           movies={ratedMovies}
+          totalMovies={totalRatedMovies}
+          ratedPage={ratedPage}
+          handleRatedPage={handleRatedPage}
           loading={loading}
           isOnline={isOnline}
           errorStatus={errorStatus}
           errorInfo={errorInfo}
+          moviesIdWithRating={moviesIdWithRating}
+          handleChangeRating={handleChangeRating}
         />
       ),
     },
@@ -132,8 +173,7 @@ export default function App({ moviesService }) {
   return (
     <ConfigProvider theme={{ token: tokens, components: components }}>
       <Flex vertical className={'page'}>
-        <Tabs defaultActiveKey="1" items={tabItems} centered onTabClick={handleTabClick} />
-        <Pagination align="center" сurrent={searchPage} onChange={handleChangePage} total={totalMovies} />
+        <Tabs defaultActiveKey="1" items={tabItems} centered destroyInactiveTabPane />
       </Flex>
     </ConfigProvider>
   )

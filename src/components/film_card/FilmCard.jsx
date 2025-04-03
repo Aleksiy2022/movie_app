@@ -2,23 +2,24 @@ import { Card, Flex, Typography, Tag, Rate, Image } from 'antd'
 import './film-card.css'
 import { useState } from 'react'
 
-import { MovieService } from '../../movie_service/movie_service.js'
-
-export default function FilmCard({ movie, isMobile }) {
-  const movieService = new MovieService()
-  const [value, setValue] = useState(0)
-  const { movie_id, realPosterPath, trimmedTitle, formattedReleaseDate, genres, trimmedOverview, rating } = movie
-
+export default function FilmCard({ movie, isMobile, moviesIdWithRating, handleChangeRating }) {
+  const [rateValue, setRateValue] = useState(0)
+  const [newRating, setNewRating] = useState(null)
+  const { movieId, realPosterPath, trimmedTitle, formattedReleaseDate, genres, trimmedOverview, rating } = movie
   const genreTagList = genres.map((genre, index) => {
     return <Tag key={index}>{genre}</Tag>
   })
 
-  function handleChange(value) {
-    const session = localStorage.getItem('TMDBGuestSession')
-    const sessionId = JSON.parse(session).guest_session_id
+  const myRating = moviesIdWithRating.find((movie) => {
+    if (movie.id === movieId) {
+      return movie
+    }
+  })
 
-    movieService.addMovieRating(movie_id, sessionId, value)
-    setValue(value)
+  function onChange(value) {
+    setNewRating(value)
+    setRateValue(value)
+    handleChangeRating(movieId, value)
   }
 
   if (isMobile) {
@@ -37,7 +38,14 @@ export default function FilmCard({ movie, isMobile }) {
         </Flex>
         <Flex vertical>
           <Typography.Paragraph className="card-description">{trimmedOverview}</Typography.Paragraph>
-          <Rate count={10} allowHalf keyboard value={value} onChange={handleChange} style={{ alignSelf: 'flex-end' }} />
+          <Rate
+            count={10}
+            allowHalf
+            keyboard
+            value={newRating ? newRating : myRating ? myRating.rating : rateValue}
+            onChange={onChange}
+            style={{ alignSelf: 'flex-end' }}
+          />
         </Flex>
       </Card>
     )
@@ -55,7 +63,14 @@ export default function FilmCard({ movie, isMobile }) {
           <Typography.Text type={'secondary'}>{formattedReleaseDate}</Typography.Text>
           <Flex justify={'space-between'}>{genreTagList}</Flex>
           <Typography.Paragraph className="card-description">{trimmedOverview}</Typography.Paragraph>
-          <Rate count={10} allowHalf keyboard value={value} onChange={handleChange} style={{ alignSelf: 'flex-end' }} />
+          <Rate
+            count={10}
+            allowHalf
+            keyboard
+            value={newRating ? newRating : myRating ? myRating.rating : rateValue}
+            onChange={onChange}
+            style={{ alignSelf: 'flex-end' }}
+          />
         </Flex>
       </Flex>
     </Card>
