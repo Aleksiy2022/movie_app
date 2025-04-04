@@ -95,8 +95,9 @@ export default function App({ moviesService }) {
     setRatedPage(page)
   }
 
-  function handleChangeRating(movieId, value) {
-    moviesService.addMovieRating(movieId, session.guest_session_id, value)
+  async function handleChangeRating(movieId, value) {
+    await moviesService.addMovieRating(movieId, session.guest_session_id, value)
+    await updatesRatedMovies(session.guest_session_id, 1)
     setMoviesIdWithRating((currentData) =>
       currentData.map((movie) => {
         if (movie.id === movieId) {
@@ -119,7 +120,6 @@ export default function App({ moviesService }) {
   }
 
   async function updatesRatedMovies(sessionId, page) {
-    setLoading(true)
     setIsOnline(navigator.onLine)
     try {
       const ratedMovies = await moviesService.getRatedMovies(sessionId, page)
