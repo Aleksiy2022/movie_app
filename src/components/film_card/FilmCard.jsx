@@ -1,20 +1,22 @@
 import { Card, Flex, Typography, Tag, Rate, Image } from 'antd'
 import './film-card.css'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+
+import { MovieContext } from '../movie_context/MovieContext.jsx'
+
+import { getGenreNames, getRating } from './utils.js'
 
 export default function FilmCard({ movie, isMobile, moviesIdWithRating, handleChangeRating }) {
   const [rateValue, setRateValue] = useState(0)
   const [newRating, setNewRating] = useState(null)
-  const { movieId, realPosterPath, trimmedTitle, formattedReleaseDate, genres, trimmedOverview, rating } = movie
-  const genreTagList = genres.map((genre, index) => {
-    return <Tag key={index}>{genre}</Tag>
+  const { genres } = useContext(MovieContext)
+  const { movieId, realPosterPath, trimmedTitle, formattedReleaseDate, genreIds, trimmedOverview, rating } = movie
+
+  const genreTagList = getGenreNames(genreIds, genres).map((name, index) => {
+    return <Tag key={index}>{name}</Tag>
   })
 
-  const myRating = moviesIdWithRating.find((movie) => {
-    if (movie.id === movieId) {
-      return movie
-    }
-  })
+  const myRating = getRating(moviesIdWithRating, movieId)
 
   function onChange(value) {
     setNewRating(value)

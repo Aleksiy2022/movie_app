@@ -72,7 +72,7 @@ class MovieService {
       })
       const data = await res.json()
       return {
-        totalMovies: data.total_results,
+        countMovies: data.total_results,
         movies: data.results.map(this._transformSearchMovies.bind(this)),
       }
     } catch (err) {
@@ -117,7 +117,7 @@ class MovieService {
         return data
       }
       return {
-        totalMovies: data.total_results,
+        countMovies: data.total_results,
         movies: data.results.map(this._transformSearchMovies.bind(this)),
       }
     } catch (err) {
@@ -141,7 +141,7 @@ class MovieService {
   }
 
   _transformSearchMovies(movie) {
-    const { id, poster_path, title, release_date, overview, vote_average, rating = null } = movie
+    const { id, poster_path, title, release_date, overview, vote_average, rating = null, genre_ids } = movie
     const trimmedTitle = trimText(title, this.maxTitleLength)
     const formattedReleaseDate = release_date ? format(release_date, 'MMM d, yyyy') : 'unknown'
     const trimmedOverview = trimText(overview, this.maxOverviewLength)
@@ -150,7 +150,7 @@ class MovieService {
       movieId: id,
       realPosterPath: `${this.baseImageUrl}${poster_path}`,
       trimmedTitle: trimmedTitle,
-      genres: ['Drama', 'Action'],
+      genreIds: genre_ids,
       formattedReleaseDate: formattedReleaseDate,
       trimmedOverview: trimmedOverview,
       rating: vote_average ? vote_average.toFixed(1) : '0.0',

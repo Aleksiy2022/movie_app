@@ -8,6 +8,7 @@ export default function RatedMoviesPage({
   movies,
   loading,
   isOnline,
+  isMobile,
   errorStatus,
   errorInfo,
   totalMovies,
@@ -18,7 +19,12 @@ export default function RatedMoviesPage({
 }) {
   const spinner = loading && isOnline ? <SpinLoader /> : null
   const content = !(loading || errorStatus || !isOnline) ? (
-    <FilmCardsList movies={movies} moviesIdWithRating={moviesIdWithRating} handleChangeRating={handleChangeRating} />
+    <FilmCardsList
+      movies={movies}
+      moviesIdWithRating={moviesIdWithRating}
+      handleChangeRating={handleChangeRating}
+      isMobile={isMobile}
+    />
   ) : null
   const error = errorStatus || !isOnline ? <ErrorIndicator error={errorInfo} isOnline={isOnline} /> : null
   return (
