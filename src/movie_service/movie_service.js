@@ -6,8 +6,8 @@ class MovieService {
   token =
     'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkN2RhODRhZjU2MDZlNGRjN2M0ZTJmMzRjYzY2NTE1MyIsIm5iZiI6MTc0MjY2NDU4MS4wMDE5OTk5LCJzdWIiOiI2N2RlZjM4NGI4ZTBmZWE5MzQwN2FiMTMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.lyU0KV-d7Gcj5vatYoa5v0m6GZp5qmS5Fxl2ZefUK84'
   typeAuth = 'Bearer'
-  baseUrl = 'https://api.themoviedb.org/3/'
-  baseImageUrl = 'https://image.tmdb.org/t/p/w500/'
+  baseUrl = 'https://api.themoviedb.org/3'
+  baseImageUrl = 'https://image.tmdb.org/t/p/w500'
   maxTitleLength = 20
   maxOverviewLength = 180
 
@@ -38,7 +38,7 @@ class MovieService {
 
   async createGuestSession() {
     try {
-      const response = await fetch(`${this.baseUrl}authentication/guest_session/new`, {
+      const response = await fetch(`${this.baseUrl}/authentication/guest_session/new`, {
         method: 'POST',
         headers: {
           Authorization: `${this.typeAuth} ${this.token}`,
